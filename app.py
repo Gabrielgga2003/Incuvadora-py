@@ -1,10 +1,44 @@
-from flask import Flask, render_template, Response
+from flask import Flask, json, render_template, Response, jsonify
+import threading
+import paho.mqtt.client as mqtt
 import cv2
 
 app = Flask(__name__)
 
 # Inicializar la cámara
 camera = cv2.VideoCapture(2)  # Cambia el índice según la cámara externa
+
+data = {"temperature": 0.0, "humidity": 0.0}
+
+
+# MQTT Configuration
+MQTT_BROKER = "18.205.126.177" # Cambia esto a tu servidor MQTT
+MQTT_PORT = 1883
+MQTT_TOPIC = "incubator/sensor-data"
+
+def on_message(client, userdata, msg):
+    global data
+    print(f"Mensaje recibido: {msg.payload}")  # Para verificar qué llega exactamente
+    try:
+        payload = msg.payload.decode()  # Decodificar el mensaje
+        message = json.loads(payload)  # Parsear JSON
+        # Usa las claves en inglés según lo que envía el ESP32
+        data["temperature"] = message.get("temperature", data["temperature"])
+        data["humidity"] = message.get("humidity", data["humidity"])
+        print(f"Datos recibidos: {data}")
+    except Exception as e:
+        print(f"Error procesando el mensaje MQTT: {e}")
+
+
+# Hilo para el cliente MQTT
+def mqtt_thread():
+    client = mqtt.Client()
+    client.on_message = on_message
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    client.subscribe(MQTT_TOPIC)
+    print(f"Conectado al broker MQTT en {MQTT_BROKER}:{MQTT_PORT}, suscrito al tópico {MQTT_TOPIC}")
+    client.loop_forever()
+
 
 
 def generate_frames(filtered=False):
@@ -40,6 +74,9 @@ def video_feed_original():
     return Response(generate_frames(filtered=False),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route("/api/data")
+def get_data():
+    return jsonify(data)
 
 @app.route('/video_feed_filtered')
 def video_feed_filtered():
@@ -49,4 +86,5 @@ def video_feed_filtered():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    threading.Thread(target=mqtt_thread, daemon=True).start()
+    app.run(host="0.0.0.0", port=8080)
