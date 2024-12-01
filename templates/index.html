@@ -1,0 +1,423 @@
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema de Monitoreo de Incubación</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+        <style>
+    .video-feed {
+                width: 100%;
+                max-width: 640px;
+                height: auto;
+                border-radius: 0.5rem;
+                border: 2px solid #e5e7eb;
+            }
+            .emoji {
+                font-size: 1.5rem;
+                margin-right: 0.5rem;
+            }
+            .temp-monitor, .humidity-monitor, .days-monitor {
+                position: fixed;
+                z-index: 50;
+                transition: all 0.3s ease;
+                right: 2rem;
+            }
+            .temp-monitor {
+                bottom: 2rem;
+            }
+            .humidity-monitor {
+                bottom: 10rem;
+            }
+            .days-monitor {
+                bottom: 18rem;
+                left: 2rem;
+                right: auto;
+            }
+            @keyframes pulse-warning {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            .warning {
+                animation: pulse-warning 1s infinite;
+                background-color: #ef4444 !important;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-50">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <img src="{{ url_for('static', filename='img/img-logo.png') }}" alt="ATMEX Logo" class="w-16 h-16 mr-4">
+                        <div>
+                            <div class="text-xl font-semibold text-gray-800">ATMEX</div>
+                            <div class="text-sm text-gray-600">* Automatizando Sueños *</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600">Sistema de Monitoreo Avanzado</div>
+                </div>
+            </div>
+        </nav>  
+
+        <!-- Header -->
+        <header class="bg-white py-6 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4">
+                <h1 class="text-3xl font-bold text-gray-900">Sistema de Monitoreo de Incubación</h1>
+                <p class="mt-2 text-gray-600">Monitoreo en tiempo real del estado de los huevos</p>
+            </div>
+        </header>
+
+        <!-- Cámaras Section -->
+        <section class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Cámara Original -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Monitoreo Normal</h3>
+                        <p class="text-gray-600 text-sm mt-2">
+                            Vista en tiempo real que permite observar el color y características físicas generales del huevo.
+                        </p>
+                    </div>
+                    <div class="flex justify-center">
+                        <img src="{{ url_for('video_feed_original') }}" 
+                            alt="Video Original" 
+                            class="video-feed">
+                    </div>
+                </div>
+
+                <!-- Cámara Filtrada -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Detección de Grietas</h3>
+                        <p class="text-gray-600 text-sm mt-2">
+                            Vista especializada que resalta imperfecciones y grietas en la superficie del huevo.
+                        </p>
+                    </div>
+                    <div class="flex justify-center">
+                        <img src="{{ url_for('video_feed_filtered') }}" 
+                            alt="Video Filtrado"
+                            class="video-feed">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Información Section -->
+        <section class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Ciclo de Incubación -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="emoji">🥚</span>
+                        Ciclo de Incubación
+                    </h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-center"><span class="emoji">📅</span>Duración total: 21 días</li>
+                        <li class="flex items-center"><span class="emoji">🌡️</span>Temperatura ideal: 37.5°C</li>
+                        <li class="flex items-center"><span class="emoji">💧</span>Humedad: 45-55%</li>
+                        <li class="flex items-center"><span class="emoji">🔄</span>Rotación: 3 veces al día</li>
+                    </ul>
+                </div>
+
+                <!-- Datos Importantes -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="emoji">📊</span>
+                        Datos Importantes
+                    </h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-center"><span class="emoji">📍</span>Posición: punta hacia abajo</li>
+                        <li class="flex items-center"><span class="emoji">👁️</span>Ovoscopía: desde día 7</li>
+                        <li class="flex items-center"><span class="emoji">🌫️</span>Detener rotación: día 18</li>
+                        <li class="flex items-center"><span class="emoji">🐣</span>Eclosión: días 20-21</li>
+                    </ul>
+                </div>
+
+                <!-- Señales de Alerta -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="emoji">⚠️</span>
+                        Señales de Alerta
+                    </h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-center"><span class="emoji">❌</span>Grietas o deformidades</li>
+                        <li class="flex items-center"><span class="emoji">🦠</span>Manchas o decoloración</li>
+                        <li class="flex items-center"><span class="emoji">💨</span>Olores inusuales</li>
+                        <li class="flex items-center"><span class="emoji">🔇</span>Sin desarrollo visible</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recomendaciones Section -->
+        <section class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Recomendaciones de Uso</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Recomendaciones Diarias -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="emoji">📋</span>
+                        Checklist Diario
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">⏰</span>
+                            <div>
+                                <p class="font-semibold">Revisar 3 veces al día</p>
+                                <p class="text-sm text-gray-600">Mañana, tarde y noche para asegurar condiciones óptimas</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">🌡️</span>
+                            <div>
+                                <p class="font-semibold">Control de temperatura</p>
+                                <p class="text-sm text-gray-600">Verificar que se mantenga constante a 37.5°C</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">💧</span>
+                            <div>
+                                <p class="font-semibold">Nivel de humedad</p>
+                                <p class="text-sm text-gray-600">Mantener entre 45-55% los primeros 18 días, luego aumentar a 65%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="daysMonitor" class="days-monitor bg-white rounded-lg shadow-lg p-4 w-64">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-700 font-semibold flex items-center">
+                            <span class="emoji">📅</span>
+                            Días de Incubación
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span id="currentDay" class="text-3xl font-bold text-gray-900">Día 2</span>
+                        <div class="flex flex-col items-end">
+                            <span class="text-xs text-gray-500">Días restantes:</span>
+                            <span id="remainingDays" class="text-sm text-gray-600">19 días (aproximado)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="humidityMonitor" class="humidity-monitor bg-white rounded-lg shadow-lg p-4 w-64">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-700 font-semibold flex items-center">
+                            <span class="emoji">💧</span>
+                            Humedad
+                        </span>
+                        <span id="humidityStatus" class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Normal
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span id="humidityValue" class="text-3xl font-bold text-gray-900">50%</span>
+                        <div class="flex flex-col items-end">
+                            <span class="text-xs text-gray-500">Rango ideal:</span>
+                            <span class="text-sm text-gray-600">45-55%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advertencias -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                        <span class="emoji">⚠️</span>
+                        Advertencias Importantes
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">🤚</span>
+                            <div>
+                                <p class="font-semibold">Manipulación cuidadosa</p>
+                                <p class="text-sm text-gray-600">Manejar los huevos con manos limpias y movimientos suaves</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">🔌</span>
+                            <div>
+                                <p class="font-semibold">Respaldo eléctrico</p>
+                                <p class="text-sm text-gray-600">Tener sistema de respaldo en caso de corte de energía</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="emoji">🧼</span>
+                            <div>
+                                <p class="font-semibold">Higiene es crucial</p>
+                                <p class="text-sm text-gray-600">Mantener el área de incubación limpia y desinfectada</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="tempMonitor" class="temp-monitor bg-white rounded-lg shadow-lg p-4 w-64">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-700 font-semibold flex items-center">
+                    <span class="emoji">🌡️</span>
+                    Temperatura
+                </span>
+                <span id="tempStatus" class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Normal
+                </span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span id="tempValue" class="text-3xl font-bold text-gray-900">37.5°C</span>
+                <div class="flex flex-col items-end">
+                    <span class="text-xs text-gray-500">Rango ideal:</span>
+                    <span class="text-sm text-gray-600">37.2°C - 37.8°C</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Desarrollo del Huevo: Ciclo de 21 Días</h2>
+            <div class="flex items-center space-x-8">
+                <img src="{{ url_for('static', filename='img/img-1.png') }}" alt="Desarrollo del Huevo" class="w-1/2 rounded-lg shadow-md">
+                <div class="w-1/2">
+                    <h3 class="text-xl font-semibold mb-4">Proceso de Desarrollo Embrionario</h3>
+                    <p class="text-gray-700 mb-4">
+                        Durante los 21 días de incubación, el huevo experimenta una transformación increíble. En los primeros días, se desarrollan los sistemas básicos del embrión, incluyendo el corazón y el sistema nervioso. Hacia la mitad de la incubación, el embrión comienza a tomar forma y desarrollar plumas y órganos. En los últimos días, el pollito se posiciona para la eclosión, absorbiendo el resto del saco vitelino.
+                    </p>
+                    <ul class="space-y-2 text-gray-600">
+                        <li>✅ Días 1-7: Desarrollo inicial de sistemas</li>
+                        <li>✅ Días 8-14: Formación de estructuras corporales</li>
+                        <li>✅ Días 15-21: Preparación para la eclosión</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t mt-12 py-8">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Contacto</h4>
+                        <p class="text-gray-600">
+                            <strong>Teléfono:</strong> 9613235076<br>
+                            <strong>Correo:</strong> contacto@atmex.com<br>
+                            <strong>Dirección:</strong> Chiapas, México
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Redes Sociales</h4>
+                        <div class="space-y-2">
+                            <p class="text-gray-600">Facebook: ATMEX Oficial</p>
+                            <p class="text-gray-600">Instagram: @atmex_tech</p>
+                            <p class="text-gray-600">LinkedIn: ATMEX Innovaciones</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Servicios</h4>
+                        <p class="text-gray-600">
+                            Monitoreo de Incubación<br>
+                            Sistemas de Control Avanzados<br>
+                            Consultoría Tecnológica
+                        </p>
+                    </div>
+                </div>
+                <div class="text-center mt-8 text-gray-500">
+                    © 2024 ATMEX. Todos los derechos reservados.
+                </div>
+            </div>
+        </footer>
+        <script>
+            // Función para generar una temperatura aleatoria dentro del rango
+            function getRandomTemp(min, max) {
+                return (Math.random() * (max - min) + min).toFixed(1);
+            }
+
+            // Función para actualizar el estado de la temperatura
+            function updateTempStatus(temp) {
+                const tempMonitor = document.getElementById('tempMonitor');
+                const tempStatus = document.getElementById('tempStatus');
+                const tempValue = document.getElementById('tempValue');
+
+                // Actualizar valor
+                tempValue.textContent = `${temp}°C`;
+
+                // Verificar rango y actualizar estado
+                if (temp < 37.2 || temp > 37.8) {
+                    tempStatus.textContent = '¡Atención!';
+                    tempStatus.className = 'px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+                    tempMonitor.classList.add('warning');
+                } else {
+                    tempStatus.textContent = 'Normal';
+                    tempStatus.className = 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+                    tempMonitor.classList.remove('warning');
+                }
+            }
+
+            // Función para simular cambios de temperatura
+            function simulateTemperature() {
+                // 80% de probabilidad de temperatura normal, 20% de temperatura fuera de rango
+                const isNormal = Math.random() < 0.8;
+                let temp;
+
+                if (isNormal) {
+                    // Temperatura normal entre 37.2 y 37.8
+                    temp = getRandomTemp(37.2, 37.8);
+                } else {
+                    // Temperatura anormal: 50% probabilidad de ser alta o baja
+                    if (Math.random() < 0.5) {
+                        temp = getRandomTemp(37.9, 38.2);
+                    } else {
+                        temp = getRandomTemp(36.8, 37.1);
+                    }
+                }
+
+                updateTempStatus(temp);
+            }
+
+            function getRandomHumidity(min, max) {
+                return (Math.random() * (max - min) + min).toFixed(1);
+            }
+
+            function updateHumidityStatus(humidity) {
+                const humidityMonitor = document.getElementById('humidityMonitor');
+                const humidityStatus = document.getElementById('humidityStatus');
+                const humidityValue = document.getElementById('humidityValue');
+
+                humidityValue.textContent = `${humidity}%`;
+
+                if (humidity < 45 || humidity > 55) {
+                    humidityStatus.textContent = '¡Atención!';
+                    humidityStatus.className = 'px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+                    humidityMonitor.classList.add('warning');
+                } else {
+                    humidityStatus.textContent = 'Normal';
+                    humidityStatus.className = 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+                    humidityMonitor.classList.remove('warning');
+                }
+            }
+
+            function simulateHumidity() {
+                const isNormal = Math.random() < 0.8;
+                let humidity;
+
+                if (isNormal) {
+                    humidity = getRandomHumidity(45, 55);
+                } else {
+                    humidity = Math.random() < 0.5 
+                        ? getRandomHumidity(56, 60) 
+                        : getRandomHumidity(40, 44);
+                }
+
+                updateHumidityStatus(humidity);
+            }
+
+            // Humidity simulation
+            simulateHumidity();
+            setInterval(simulateHumidity, 5000);
+
+            // Iniciar simulación
+            simulateTemperature();
+            // Actualizar cada 5 segundos
+            setInterval(simulateTemperature, 5000);
+        </script>
+    </body>
+    </html>

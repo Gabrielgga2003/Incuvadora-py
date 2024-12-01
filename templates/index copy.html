@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Monitoreo de Incubación</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .video-feed {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 0.5rem;
+            border: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-semibold text-gray-800">EggMonitor Pro</div>
+                <div class="text-sm text-gray-600">Sistema de Monitoreo Avanzado</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-white py-6 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-3xl font-bold text-gray-900">Sistema de Monitoreo de Incubación</h1>
+            <p class="mt-2 text-gray-600">Monitoreo en tiempo real del estado de los huevos</p>
+        </div>
+    </header>
+
+    <!-- Cámaras Section -->
+    <section class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Cámara Original -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Monitoreo Normal</h3>
+                    <p class="text-gray-600 text-sm mt-2">
+                        Vista en tiempo real que permite observar el color y características físicas generales del huevo.
+                    </p>
+                </div>
+                <div class="flex justify-center">
+                    <img src="{{ url_for('video_feed_original') }}" 
+                         alt="Video Original" 
+                         class="video-feed">
+                </div>
+            </div>
+
+            <!-- Cámara Filtrada -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Detección de Grietas</h3>
+                    <p class="text-gray-600 text-sm mt-2">
+                        Vista especializada que resalta imperfecciones y grietas en la superficie del huevo.
+                    </p>
+                </div>
+                <div class="flex justify-center">
+                    <img src="{{ url_for('video_feed_filtered') }}" 
+                         alt="Video Filtrado"
+                         class="video-feed">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Información Section -->
+    <section class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Tiempos de Incubación -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Tiempos de Incubación</h3>
+                <ul class="space-y-3 text-gray-600">
+                    <li>• Gallina: 21 días</li>
+                    <li>• Pato: 28 días</li>
+                    <li>• Codorniz: 17-18 días</li>
+                    <li>• Ganso: 29-31 días</li>
+                </ul>
+            </div>
+
+            <!-- Datos Curiosos -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Datos Curiosos</h3>
+                <ul class="space-y-3 text-gray-600">
+                    <li>• La temperatura óptima de incubación es de 37.5°C</li>
+                    <li>• Los huevos deben rotarse al menos 3 veces al día</li>
+                    <li>• La humedad debe mantenerse entre 45-55%</li>
+                    <li>• El desarrollo del embrión se puede observar mediante ovoscopía</li>
+                </ul>
+            </div>
+
+            <!-- Guía de Monitoreo -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Guía de Monitoreo</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg">
+                            <img src="/api/placeholder/64/64" alt="Guía 1" class="w-full h-full object-cover rounded-lg">
+                        </div>
+                        <p class="text-sm text-gray-600">Observe diariamente el desarrollo del embrión mediante la cámara especializada.</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg">
+                            <img src="/api/placeholder/64/64" alt="Guía 2" class="w-full h-full object-cover rounded-lg">
+                        </div>
+                        <p class="text-sm text-gray-600">Verifique la integridad de la cáscara para detectar problemas temprano.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <p class="text-center text-gray-600 text-sm">
+                Sistema de Monitoreo de Incubación - Desarrollado con tecnología avanzada de procesamiento de imágenes
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
